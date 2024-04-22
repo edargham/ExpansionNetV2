@@ -18,7 +18,7 @@ python demo.py \
 Some examples:
 
 <p align="center">
-  <img src="./demo_results.png" width="550"/>
+  <img src="./ExpansionNetV2/demo_results.png" width="550"/>
 </p>
 
 images are available in `demo_material`.
@@ -108,7 +108,7 @@ Results on the Karpathy test split:
 Predictions examples:
 
 <p align="center">
-  <img src="./results_image.png" width="700"/>
+  <img src="./ExpansionNetV2/results_image.png" width="700"/>
 </p>
 
 
