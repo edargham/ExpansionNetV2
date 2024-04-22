@@ -15,6 +15,8 @@ from utils.language_utils import tokens2description
 
 
 if __name__ == "__main__":
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    print('Processing on device: ', device)
 
     parser = argparse.ArgumentParser(description='Demo')
     parser.add_argument('--model_dim', type=int, default=512)
@@ -66,19 +68,22 @@ if __name__ == "__main__":
                                 output_word2idx=coco_tokens['word2idx_dict'],
                                 output_idx2word=coco_tokens['idx2word_list'],
                                 max_seq_len=args.max_seq_len, drop_args=model_args.drop_args,
-                                rank='cpu')
-    checkpoint = torch.load(args.load_path)
+                                rank=device)
+    model = model.to(device)
+
+    checkpoint = torch.load(args.load_path, map_location=device)
     model.load_state_dict(checkpoint['model_state_dict'])
     print("Model loaded ...")
 
     input_images = []
     for path in args.image_paths:
-        input_images.append(preprocess_image(path, img_size))
+        input_images.append(preprocess_image(path, img_size).to(device))
 
     print("Generating captions ...\n")
     for i in range(len(input_images)):
         path = args.image_paths[i]
         image = input_images[i]
+        image = image.to(device)
         beam_search_kwargs = {'beam_size': args.beam_size,
                               'beam_max_seq_len': args.max_seq_len,
                               'sample_or_max': 'max',
