@@ -1,1 +1,4 @@
 *.pth
+*.mar
+logs/
+model_store/

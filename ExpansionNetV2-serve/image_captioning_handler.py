@@ -3,15 +3,15 @@ from ts.torch_handler.base_handler import BaseHandler
 import pickle
 from argparse import Namespace
 
-from ExpansionNetV2.models.End_ExpansionNet_v2 import End_ExpansionNet_v2
-from ExpansionNetV2.utils.image_utils import preprocess_imgb64
-from ExpansionNetV2.utils.language_utils import tokens2description
+from End_ExpansionNet_v2 import End_ExpansionNet_v2
+from image_utils import preprocess_imgb64
+from language_utils import tokens2description
 
 class ImageCaptioningHandler(BaseHandler):
   def initialize(self, context):
     self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-    with open('./ExpansionNetV2/demo_material/demo_coco_tokens.pickle', 'rb') as f:
+    with open('./demo_coco_tokens.pickle', 'rb') as f:
       self.coco_tokens = pickle.load(f)
       self.sos_idx = self.coco_tokens['word2idx_dict'][self.coco_tokens['sos_str']]
       self.eos_idx = self.coco_tokens['word2idx_dict'][self.coco_tokens['eos_str']]

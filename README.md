@@ -23,6 +23,14 @@ Some examples:
 
 images are available in `demo_material`.
 
+## Serving
+You can serve this model using torchserve by running the following commands:
+```bash
+mkdir model_store
+torch-model-archiver --model-name expansion-net-v2 --version <version> --model-file ./ExpansionNetV2-serve/End_ExpansionNet_v2.py --serialized-file <path-to-weights/chkpt.pth> --handler ./ExpansionNetV2-serve/image_captioning_handler.py --extra-files "./ExpansionNetV2-serve/demo_coco_tokens.pickle,./ExpansionNetV2-serve/layers.py,./ExpansionNetV2-serve/captioning_model.py,./ExpansionNetV2-serve/swin_transformer_mod.py,./ExpansionNetV2-serve/image_utils.py,./ExpansionNetV2-serve/language_utils.py,./ExpansionNetV2-serve/masking.py"
+mv expansion-net-v2.mar ./model_store/
+torchserve --start --model-store model_store --models expansion-net-v2=expansion-net-v2.mar --ncs
+```
 
 ## ONNX & TensorRT
 
