@@ -58,31 +58,31 @@ class ImageCaptioningHandler(BaseHandler):
   def preprocess(self, data):
     if self.model is None:
       raise RuntimeError('Model has not been loaded.')
-    if 'image' not in data:
-      raise RuntimeError('No \'image\' data found.')
-    
-    image = data['image']
-    image = preprocess_imgb64(image, self.image_size).to(self.device)
-    return image
+
+    batch_raw = [preprocess_imgb64(entity['body']['image'], self.image_size) for entity in data]
+    batch = torch.cat(batch_raw)
+    return batch    
 
   def inference(self, data):
-    image = self.preprocess(data)
-    image = image.to(self.device)
-
+    data = data.to(self.device)
+    self.model = self.model.to(self.device)
     with torch.no_grad():
       pred, _ = self.model(
-        enc_x=image,
+        enc_x=data,
         enc_x_num_pads=[0],
         mode='beam_search', 
         **self.beam_search_kwargs
       )
-
     return pred
 
   def postprocess(self, data):
-    data = tokens2description(
-      data[0][0],
-      self.coco_tokens['idx2word_list'], 
-      self.sos_idx, self.eos_idx
-    )
+    data = [
+      tokens2description(
+        entry[0],
+        self.coco_tokens['idx2word_list'], 
+        self.sos_idx, self.eos_idx
+      )
+      for entry in data
+    ]
+
     return data
