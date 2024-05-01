@@ -31,6 +31,18 @@ torch-model-archiver --model-name expansion-net-v2 --version <version> --model-f
 mv expansion-net-v2.mar ./model_store/
 torchserve --start --model-store model_store --models expansion-net-v2=expansion-net-v2.mar --ncs
 ```
+### Docker
+This model can also be served using docker. Make sure to use the appropriate docker file for your own build.\
+Use the already provided `Dockerfile` if you have a GPU installed on your machine.\
+Use `Dockerfile.cpu` to build your docker image if no GPU is installed in your system. Delete or move `Dockerfile` from this directory and rename `Dockerfile.cpu` to `Dockerfile` then run:
+
+```bash
+docker build . -t expansion-net-v2-torchserve 
+# If using GPUs
+docker run --gpus <num-gpus-on-your-system> --rm -it -p 8080:8080 -p 8081:8081 -p 8082:8082 expansion-net-v2-torchserve:latest
+# Else
+docker run --rm -it -p 8080:8080 -p 8081:8081 -p 8082:8082 expansion-net-v2-torchserve:latest
+```
 
 ## ONNX & TensorRT
 

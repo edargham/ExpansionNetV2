@@ -1,4 +1,4 @@
-FROM pytorch/torchserve:0.10.0-gpu
+FROM pytorch/torchserve:0.10.0-cpu
 WORKDIR /home/model-server/
 
 COPY . /home/model-server/

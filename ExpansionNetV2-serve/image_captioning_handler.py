@@ -1,3 +1,4 @@
+import os
 import torch
 from ts.torch_handler.base_handler import BaseHandler
 import pickle
@@ -7,11 +8,13 @@ from End_ExpansionNet_v2 import End_ExpansionNet_v2
 from image_utils import preprocess_imgb64
 from language_utils import tokens2description
 
+
 class ImageCaptioningHandler(BaseHandler):
   def initialize(self, context):
+    base_dir = os.getenv('MODEL_BASE_PATH', '/home/model-server/ExpansionNetV2-serve')
     self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-    with open('./demo_coco_tokens.pickle', 'rb') as f:
+    with open(f'{base_dir}/demo_coco_tokens.pickle', 'rb') as f:
       self.coco_tokens = pickle.load(f)
       self.sos_idx = self.coco_tokens['word2idx_dict'][self.coco_tokens['sos_str']]
       self.eos_idx = self.coco_tokens['word2idx_dict'][self.coco_tokens['eos_str']]
@@ -52,9 +55,10 @@ class ImageCaptioningHandler(BaseHandler):
       max_seq_len=74, drop_args=drop_args,
       rank=self.device
     )
-    checkpoint = torch.load('./rf_model.pth', map_location=self.device)
+    checkpoint = torch.load(f'{base_dir}/rf_model.pth', map_location=self.device)
     self.model.load_state_dict(checkpoint['model_state_dict'])
-
+    self.initialized = True
+    
   def preprocess(self, data):
     if self.model is None:
       raise RuntimeError('Model has not been loaded.')
